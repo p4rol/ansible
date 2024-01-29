@@ -6,21 +6,21 @@
   tasks:
     - name: Create Repository Directory
       file:
-        path: /home/anton/repo
+        path: /home/anton/newrepo
         state: directory
       become: yes
 
-    - name: Fetch all files from Remote Server
-      find:
-        paths: /home/anton/repo
-        recurse: yes
-      register: all_files
+    - name: Fetch List of Files from Remote Server
+      uri:
+        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/"
+        method: GET
+      register: remote_files
 
-    - name: Fetch Files from Remote Server
+    - name: Fetch All Files from Remote Server
       get_url:
-        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/{{ item.path }}"
-        dest: "/home/anton/repo/{{ item.path | regex_replace('^' + '/path/to/your/packages/', '') }}"
-      with_items: "{{ all_files.files }}"
+        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/{{ item }}"
+        dest: "/home/anton/newrepo/{{ item }}"
+      with_items: "{{ remote_files.json.files }}"
 
     - name: Install createrepo Package
       dnf:
