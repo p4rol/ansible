@@ -54,7 +54,7 @@
       copy:
         content: |
           [local]
-          name=Local Repository
+          name=ol9_baseos_latest
           baseurl=http://10.0.0.5/repo   # Update with your actual server URL
           enabled=1
           gpgcheck=0  # Change to 1 if you sign your packages
