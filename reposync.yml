@@ -1,0 +1,67 @@
+---
+- name: Sync RHEL 9 Local Package Repository
+  hosts: your_target_server
+  become: true
+
+  tasks:
+    - name: Create Repository Directory
+      file:
+        path: /path/to/local/repo
+        state: directory
+      become: yes
+
+    - name: Fetch all RPM Packages from Remote Server
+      find:
+        paths: /path/to/your/packages
+        patterns: "*.rpm"
+      register: rpm_packages
+
+    - name: Fetch RPM Packages from Remote Server
+      get_url:
+        url: "http://your-package-server/{{ item.path }}"
+        dest: "/path/to/local/repo/{{ item.path | basename }}"
+      with_items: "{{ rpm_packages.files }}"
+
+    - name: Install createrepo Package
+      dnf:
+        name: createrepo
+        state: present
+      become: yes
+
+    - name: Create Repository Metadata
+      command: createrepo /path/to/local/repo
+      become: yes
+
+    # Optional: Set up a web server (e.g., httpd) to make the repository accessible over the network
+    - name: Install httpd Package
+      dnf:
+        name: httpd
+        state: present
+      become: yes
+
+    - name: Copy Repository to Web Server Directory
+      command: cp -r /path/to/local/repo /var/www/html/
+      become: yes
+
+    - name: Start and Enable httpd Service
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: Configure YUM/DNF to Use the Local Repository
+      copy:
+        content: |
+          [local]
+          name=Local Repository
+          baseurl=http://your-server/repo   # Update with your actual server URL
+          enabled=1
+          gpgcheck=0  # Change to 1 if you sign your packages
+        dest: /etc/yum.repos.d/local.repo
+      become: yes
+
+    - name: Test Local Repository
+      dnf:
+        name: '*'
+        state: latest
