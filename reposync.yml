@@ -1,6 +1,6 @@
 ---
 - name: Sync RHEL 9 Local Package Repository
-  hosts: your_target_server
+  hosts: localhost
   become: true
 
   tasks:
