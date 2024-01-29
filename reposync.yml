@@ -10,17 +10,17 @@
         state: directory
       become: yes
 
-    - name: Fetch all RPM Packages from Remote Server
+    - name: Fetch all files from Remote Server
       find:
         paths: /home/anton/repo
-        patterns: "*.rpm"
-      register: rpm_packages
+        recurse: yes
+      register: all_files
 
-    - name: Fetch RPM Packages from Remote Server
+    - name: Fetch Files from Remote Server
       get_url:
         url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/{{ item.path }}"
-        dest: "/home/anton/repo/{{ item.path | basename }}"
-      with_items: "{{ rpm_packages.files }}"
+        dest: "/home/anton/repo/{{ item.path | regex_replace('^' + '/path/to/your/packages/', '') }}"
+      with_items: "{{ all_files.files }}"
 
     - name: Install createrepo Package
       dnf:
