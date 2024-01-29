@@ -18,7 +18,7 @@
 
     - name: Fetch RPM Packages from Remote Server
       get_url:
-        url: "http://your-package-server/{{ item.path }}"
+        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/{{ item.path }}"
         dest: "/home/anton/repo/{{ item.path | basename }}"
       with_items: "{{ rpm_packages.files }}"
 
