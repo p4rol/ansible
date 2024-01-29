@@ -6,20 +6,20 @@
   tasks:
     - name: Create Repository Directory
       file:
-        path: /path/to/local/repo
+        path: /home/anton/repo
         state: directory
       become: yes
 
     - name: Fetch all RPM Packages from Remote Server
       find:
-        paths: /path/to/your/packages
+        paths: /home/anton/repo
         patterns: "*.rpm"
       register: rpm_packages
 
     - name: Fetch RPM Packages from Remote Server
       get_url:
         url: "http://your-package-server/{{ item.path }}"
-        dest: "/path/to/local/repo/{{ item.path | basename }}"
+        dest: "/home/anton/repo/{{ item.path | basename }}"
       with_items: "{{ rpm_packages.files }}"
 
     - name: Install createrepo Package
@@ -29,7 +29,7 @@
       become: yes
 
     - name: Create Repository Metadata
-      command: createrepo /path/to/local/repo
+      command: createrepo /home/anton/repo
       become: yes
 
     # Optional: Set up a web server (e.g., httpd) to make the repository accessible over the network
@@ -40,7 +40,7 @@
       become: yes
 
     - name: Copy Repository to Web Server Directory
-      command: cp -r /path/to/local/repo /var/www/html/
+      command: cp -r /home/anton/repo /var/www/html/
       become: yes
 
     - name: Start and Enable httpd Service
@@ -55,7 +55,7 @@
         content: |
           [local]
           name=Local Repository
-          baseurl=http://your-server/repo   # Update with your actual server URL
+          baseurl=http://10.0.0.5/repo   # Update with your actual server URL
           enabled=1
           gpgcheck=0  # Change to 1 if you sign your packages
         dest: /etc/yum.repos.d/local.repo
