@@ -16,10 +16,8 @@
         method: GET
       register: remote_files
 
-    - name: Fetch All Files from Remote Server
-      get_url:
-        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/{{ item }}"
-        dest: "/home/anton/newrepo/{{ item }}"
+    - name: Fetch All Files from Remote Server using wget
+      command: "wget -P /home/anton/newrepo https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/{{ item }}"
       with_items: "{{ remote_files.json.files }}"
 
     - name: Install createrepo Package
