@@ -18,7 +18,7 @@
         state: directory
       become: yes
 
-    - name: Test exectute shell
+    - name: Download all latest versions of packages from the repository and place it in the local directory
       ansible.builtin.shell: sudo reposync -n -p "{{ local_repo_path }}" --repoid=ol9_baseos_latest --repoid=ol9_baseos_latest
       become: yes
 
