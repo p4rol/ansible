@@ -1,5 +1,5 @@
 ---
-- name: Sync RHEL 9 Local Package Repository
+- name: Local RHEL9 package repository setup. Fetch packages and expose with httpd
   hosts: localhost
   become: true
   vars:
@@ -32,7 +32,7 @@
       command: createrepo "{{ local_repo_path }}"
       become: yes
 
-    # Optional: Set up a web server (e.g., httpd) to make the repository accessible over the network
+    # Set up a web server (httpd) to make the repository accessible over the network
     - name: Install httpd Package
       dnf:
         name: httpd
