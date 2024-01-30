@@ -6,6 +6,12 @@
     local_repo_path: /home/anton/newrepo
 
   tasks:
+    - name: Install yum utils
+      dnf:
+        name: yum-utils
+        state: present
+      become: yes
+      
     - name: Create Repository Directory
       file:
         path: "{{ local_repo_path }}"
