@@ -10,8 +10,13 @@
         state: directory
       become: yes
 
-    - name: TEst exectute shell
+    - name: Test exectute shell
       ansible.builtin.shell: uname -a
+      register: output
+
+    - name: Display output
+      ansible.biultin.debug:
+        var: output.stdout_lines
 
     - name: Install createrepo Package
       dnf:
