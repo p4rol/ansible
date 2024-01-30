@@ -1,9 +1,8 @@
 ---
-local_repo_path: /home/anton/newrepo
-
 - name: Sync RHEL 9 Local Package Repository
   hosts: localhost
   become: true
+  local_repo_path: /home/anton/newrepo
 
   tasks:
     - name: Create Repository Directory
