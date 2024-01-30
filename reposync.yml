@@ -13,7 +13,7 @@
       become: yes
 
     - name: Test exectute shell
-      ansible.builtin.shell: reposync -n -p "{{ local_repo_path }}" -–download-metadata —repoid=ol9_baseos_latest
+      ansible.builtin.shell: reposync -n -p "{{ local_repo_path }}" -–download-metadata -—repoid=ol9_baseos_latest
 
     - name: Install createrepo Package
       dnf:
