@@ -7,12 +7,12 @@
   tasks:
     - name: Create Repository Directory
       file:
-        path: {{ local_repo_path }}
+        path: "{{ local_repo_path }}"
         state: directory
       become: yes
 
     - name: Test exectute shell
-      ansible.builtin.shell: reposync -n -p {{ local_repo_path }} -–download-metadata —repoid=ol9_baseos_latest
+      ansible.builtin.shell: reposync -n -p "{{ local_repo_path }}" -–download-metadata —repoid=ol9_baseos_latest
 
     - name: Install createrepo Package
       dnf:
@@ -21,7 +21,7 @@
       become: yes
 
     - name: Create Repository Metadata
-      command: createrepo {{ local_repo_path }}
+      command: createrepo "{{ local_repo_path }}"
       become: yes
 
     # Optional: Set up a web server (e.g., httpd) to make the repository accessible over the network
@@ -32,7 +32,7 @@
       become: yes
 
     - name: Copy Repository to Web Server Directory
-      command: cp -r {{ local_repo_path }} /var/www/html/
+      command: cp -r "{{ local_repo_path }}" /var/www/html/
       become: yes
 
     - name: Start and Enable httpd Service
