@@ -10,17 +10,12 @@
         state: directory
       become: yes
 
-   - name: Fetch List of RPM Files from Remote Server
-      uri:
-        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/"
-        method: GET
-      register: remote_files
-
-    - name: Fetch All RPM Files from Remote Server using get_url
-      get_url:
-        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/{{ item }}"
-        dest: "/home/anton/newrepo/{{ item | regex_replace('^/', '') }}"
-      with_items: "{{ remote_files.json.files | select('search', '\\.rpm$') }}"
+    - name: Synchronize Files from Remote Server
+      synchronize:
+        src: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/"
+        dest: "/home/anton/newrepo"
+        mode: pull
+      delegate_to: localhost
 
     - name: Install createrepo Package
       dnf:
