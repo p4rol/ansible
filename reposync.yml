@@ -10,11 +10,10 @@
         state: directory
       become: yes
 
-    - name: Synchronize Files from Remote Server
-      synchronize:
-        src: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/"
-        dest: "/home/anton/newrepo"
-        mode: pull
+    - name: Fetch All Files from Remote Server using get_url
+      get_url:
+        url: "https://yum.oracle.com/repo/OracleLinux/OL9/baseos/latest/x86_64/*"
+        dest: "/home/anton/repo"
       delegate_to: localhost
 
     - name: Install createrepo Package
