@@ -14,6 +14,7 @@
 
     - name: Test exectute shell
       ansible.builtin.shell: sudo reposync -n -p "{{ local_repo_path }}" -–download-metadata -—repoid=ol9_baseos_latest
+      become: yes
 
     - name: Install createrepo Package
       dnf:
