@@ -8,7 +8,7 @@
         content: |
           [local]
           name=local_ol9_baseos_latest
-          baseurl=http://10.0.0.5/repo   # Update with your actual server URL
+          baseurl=http://10.0.0.5/newrepo   # Update with your actual server URL
           enabled=1
           gpgcheck=0  # Change to 1 if you sign your packages
         dest: /etc/yum.repos.d/local.repo
