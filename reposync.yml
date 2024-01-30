@@ -15,7 +15,7 @@
       register: output
 
     - name: Display output
-      ansible.biultin.debug:
+      ansible.builtin.debug:
         var: output.stdout_lines
 
     - name: Install createrepo Package
