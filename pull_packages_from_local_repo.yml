@@ -4,7 +4,6 @@
   remote_user: anton
   vars:
     ansible_ssh_pass: "password"
-    
   become: true
 
   tasks:
