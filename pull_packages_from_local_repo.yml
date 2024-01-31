@@ -11,6 +11,6 @@
           name=local_ol9_baseos_latest
           baseurl=http://10.0.0.5/newrepo
           enabled=1
-          gpgcheck=0  # Change to 1 if you sign your packages
+          gpgcheck=0
         dest: /etc/yum.repos.d/local.repo
       become: yes
