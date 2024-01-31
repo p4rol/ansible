@@ -1,2 +1,4 @@
+# This file contains a list of servers that tasks can be distributed to
+
 [cluster1]
-10.0.0.16
+10.0.0.16            # Just one host for now, but this will change
