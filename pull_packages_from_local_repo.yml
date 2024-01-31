@@ -1,6 +1,6 @@
 ---
 - name: Make this server pull packages from the local server, not from accross the internet
-  hosts: localhost
+  hosts: 10.0.0.16
   become: true
   
     - name: Configure YUM/DNF to Use the Local Repository
