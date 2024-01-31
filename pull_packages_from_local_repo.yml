@@ -1,6 +1,7 @@
 ---
 - name: Make this server pull packages from the local server, not from accross the internet
   hosts: cluster1
+  remote_user: anton
   become: true
 
   tasks:
