@@ -23,4 +23,5 @@
           - firefox
           - mtr
           - stress-ng
+          - htop
         state: present
