@@ -1,0 +1,15 @@
+---
+- name: Install stress-ng and stress the cluster
+  hosts: cluster1     # Only run on this cluster
+  become: true        # Gain root privileges
+
+  tasks:
+    - name: Install stress-ng
+      apt:
+        name: stress-ng
+        state: present
+
+    - name: Run CPU stress test (modify as needed)
+      stress-ng:
+        vm: 1     # Run just 1 VM
+        time: 60  # Duration of test in seconds
