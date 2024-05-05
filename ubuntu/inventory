@@ -1,0 +1,8 @@
+# This file contains a list of servers that tasks can be distributed to
+
+[cluster1]
+firewall
+pi
+s01 
+s02
+s03
