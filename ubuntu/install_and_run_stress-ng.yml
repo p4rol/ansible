@@ -10,6 +10,5 @@
         state: present
 
     - name: Run CPU stress test (modify as needed)
-      stress-ng:
-        vm: 1     # Run just 1 VM
-        time: 60  # Duration of test in seconds
+      command: stress-ng --matrix 1 -t 1m
+
