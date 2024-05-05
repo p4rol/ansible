@@ -22,4 +22,5 @@
           - fish
           - firefox
           - mtr
+          - stress-ng
         state: present
