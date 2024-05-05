@@ -10,5 +10,5 @@
         state: present
 
     - name: Run CPU stress test (modify as needed)
-      command: stress-ng --matrix 1 -t 10m
+      command: stress-ng --matrix 3 -t 10m
 
