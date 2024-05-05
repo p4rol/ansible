@@ -1,0 +1,12 @@
+---
+- name: Install hosts configuration files
+  hosts: cluster1         # The intended cluster to run these commands on 
+  become: true
+
+  tasks:
+    - name: Install hosts file    # Literally the /etc/hosts file for this machine
+      copy:
+        src: hosts        # The new /etc/hosts file for this host
+        dest: /etc/hosts  # The location for the /etc/hosts file
+        owner: root       # Make sure the owner is root 
+        group: root       # Make sure the group is root 
