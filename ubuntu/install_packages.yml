@@ -1,0 +1,25 @@
+---
+- name: Update apt cache and upgrade packages
+  hosts: cluster1 # Update all hosts in your inventory
+  become: true  # Gain root privileges
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 86400  # Optional: Cache valid for 24 hours (seconds)
+
+    - name: Upgrade packages
+      apt:
+        upgrade: yes
+          # auto_remove: yes  # Optional: Automatically remove unused packages
+          #
+    - name: Install some basic packages
+      apt:
+        name:
+          - btop
+          - tmux
+          - fish
+          - firefox
+          - libreoffice
+        state: present
