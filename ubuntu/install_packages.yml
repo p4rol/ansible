@@ -11,7 +11,9 @@
 
     - name: Upgrade packages
       apt:
-        upgrade: yes
+        upgrade: dist
+          # upgrade: dist     # to upgrade just security updates from the same release (i.e. stable)
+          # upgrade: yes      # upgrade to latest version of package availble 
           # auto_remove: yes  # Optional: Automatically remove unused packages
           #
     - name: Install some basic packages
