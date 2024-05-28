@@ -1,5 +1,10 @@
+# Overall purpose of this playbook: 
+# - Update the list of available packages
+# - Upgrade packages where possible 
+# - Install some packages
+
 ---
-- name: Update apt cache and upgrade packages
+- name: Update apt cache, perform security upgrades, install packages
   hosts: cluster1 # Update all hosts in your inventory
   become: true  # Gain root privileges
 
@@ -9,13 +14,13 @@
         update_cache: yes
         cache_valid_time: 86400  # Optional: Cache valid for 24 hours (seconds)
 
-    - name: Upgrade packages
+    - name: Install security updates
       apt:
         upgrade: dist
           # upgrade: dist     # to upgrade just security updates from the same release (i.e. stable)
           # upgrade: yes      # upgrade to latest version of package availble 
           # auto_remove: yes  # Optional: Automatically remove unused packages
-          #
+          
     - name: Install some basic packages
       apt:
         name:
