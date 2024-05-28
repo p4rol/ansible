@@ -1,6 +1,6 @@
 ---
 - name: Install hosts configuration files
-  hosts: cluster1         # The intended cluster to run these commands on 
+  hosts: cluster01         # The intended cluster to run these commands on 
   become: true
 
   tasks:
