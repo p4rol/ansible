@@ -2,7 +2,7 @@
 
 [cluster01]
 firewall
-pi
-s01 
-s02
-s03
+pi.home
+s01.home
+s02.home
+s03.home
