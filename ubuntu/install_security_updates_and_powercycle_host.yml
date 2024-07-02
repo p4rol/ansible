@@ -1,0 +1,27 @@
+# Overall purpose of this playbook: 
+# - Install any security packages
+# - Restart the host if security packages were installed
+
+---
+- name: Update apt cache, perform security upgrades, install packages, and restart remote hosts
+  hosts: cluster01  # Update all hosts in your inventory
+  become: true      # Gain root privileges
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 86400  # Optional: Cache valid for 24 hours (seconds)
+
+    - name: Install security updates
+      apt:
+        upgrade: dist
+        # upgrade: dist     # to upgrade just security updates from the same release (i.e. stable)
+        # upgrade: yes      # upgrade to latest version of package availble 
+        # auto_remove: yes  # Optional: Automatically remove unused packages
+      register: security_upgrade_result  # Store the result of the task
+
+    - name: Restart remote hosts if security updates were successful
+      command: reboot
+      delegate_to: "{{ inventory_hostname }}"
+      when: security_upgrade_result.changed
