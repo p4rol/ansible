@@ -1,6 +1,6 @@
 ---
 - name: Install stress-ng and stress the cluster
-  hosts: cluster1     # Only run on this cluster
+  hosts: cluster01     # Only run on this cluster
   become: true        # Gain root privileges
 
   tasks:
