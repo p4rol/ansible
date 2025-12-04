@@ -3,8 +3,6 @@
   hosts: cluster03        # The name of the group of hosts we're going to work on 
   become: true            # Gain root privileges to run the command 
 
-
-
   tasks:
     - name: Enable EPEL (extras repo)
       dnf:
