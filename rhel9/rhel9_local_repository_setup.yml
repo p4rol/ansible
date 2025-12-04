@@ -1,54 +1,80 @@
-# This script will build a package repository locally on this machine. 
-# Tested on RHEL/CENTOS/OEL 9.4 
-
 ---
-- name: Local RHEL9 package repository setup. Fetch packages and expose with httpd
+- name: Build and publish local OEL/RHEL 9 repositories (BaseOS, AppStream, EPEL) on NFS
   hosts: localhost
   become: true
+
   vars:
-    local_repo_path: /home/anton/newrepo
+    # NFS-backed storage for the repo content + metadata
+    repo_root: /mnt/repos
+
+    # Where httpd will serve repos from (symlink → repo_root)
+    http_repo_root: /var/www/html/repos
+
+    mirrored_repos:
+      - name: BaseOS
+        repoid: ol9_baseos_latest
+      - name: AppStream
+        repoid: ol9_appstream
+      - name: EPEL
+        repoid: ol9_developer_EPEL    # <- correct EPEL repo ID on OL9
 
   tasks:
-    - name: Install yum utils
+
+    - name: Install required packages for mirroring and serving repos
       dnf:
-        name: yum-utils
+        name:
+          - yum-utils     # reposync
+          - createrepo    # repodata
+          - httpd         # web server
         state: present
-      become: yes
-      
-    - name: Create Repository Directory
+
+    # Ensure the NFS mount is present BEFORE this (fstab or separate task)
+    - name: Ensure NFS-backed repo root directory exists
       file:
-        path: "{{ local_repo_path }}"
+        path: "{{ repo_root }}"
         state: directory
-      become: yes
+        mode: '0755'
 
-    - name: Download all latest versions of packages from the repository and place it in the local directory
-      ansible.builtin.shell: sudo reposync -n -p "{{ local_repo_path }}" --repoid=ol9_baseos_latest --repoid=ol9_baseos_latest
-      become: yes
+    - name: Ensure subdirectories exist for each mirrored repo on NFS
+      file:
+        path: "{{ repo_root }}/{{ item.repoid }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ mirrored_repos }}"
 
-    - name: Install createrepo Package
-      dnf:
-        name: createrepo
-        state: present
-      become: yes
+    - name: Sync each configured repository with reposync into NFS
+      command: >
+        reposync -n -p "{{ repo_root }}/{{ item.repoid }}"
+        --repoid={{ item.repoid }}
+        --download-metadata
+      loop: "{{ mirrored_repos }}"
 
-    - name: Create Repository Metadata
-      command: createrepo "{{ local_repo_path }}"
-      become: yes
+    - name: Create repository metadata for each local repo on NFS
+      command: createrepo "{{ repo_root }}/{{ item.repoid }}"
+      # If you really want to only create once, uncomment creates:
+      # args:
+      #   creates: "{{ repo_root }}/{{ item.repoid }}/repodata"
+      loop: "{{ mirrored_repos }}"
 
-    # Set up a web server (httpd) to make the repository accessible over the network
-    - name: Install httpd Package
-      dnf:
-        name: httpd
-        state: present
-      become: yes
+    - name: Ensure parent directory for Apache repo symlink exists
+      file:
+        path: "{{ http_repo_root | dirname }}"
+        state: directory
+        mode: '0755'
 
-    - name: Copy Repository to Web Server Directory
-      command: cp -r "{{ local_repo_path }}" /var/www/html/
-      become: yes
+    - name: Point Apache repo directory to NFS repo root via symlink
+      file:
+        src: "{{ repo_root }}"
+        dest: "{{ http_repo_root }}"
+        state: link
+        force: yes
 
-    - name: Start and Enable httpd Service
+    - name: Allow httpd to read NFS content (SELinux)
+      command: setsebool -P httpd_use_nfs 1
+      when: ansible_selinux is defined and ansible_selinux.status == "enabled"
+
+    - name: Start and enable httpd
       systemd:
         name: httpd
         state: started
         enabled: yes
-      become: yes
