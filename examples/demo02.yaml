@@ -1,6 +1,6 @@
 ---
 - name: Introduction to writing playbooks 
-  hosts: cluster01        # The name of the group of hosts we're going to work on 
+  hosts: cluster02        # The name of the group of hosts we're going to work on 
   become: true            # Gain root privileges to run the command 
 
   tasks:
@@ -8,4 +8,4 @@
       apt:
         name:
           -  btop
-        state: present
+        state: absent 
