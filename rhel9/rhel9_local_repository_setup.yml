@@ -1,6 +1,7 @@
 ---
 - name: Build and publish local OEL/RHEL 9 repositories (BaseOS, AppStream, EPEL) on NFS
   hosts: localhost
+  connection: local
   become: true
 
   vars:
