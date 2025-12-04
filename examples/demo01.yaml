@@ -1,12 +1,7 @@
-# Overall purpose of this playbook: 
-# - Update the list of available packages
-# - Upgrade packages where possible 
-# - Install some packages
-
 ---
-- name: Update apt cache, perform security upgrades, install packages
-  hosts: cluster01 # Update all hosts in your inventory
-  become: true  # Gain root privileges
+- name: Introduction to writing playbooks 
+  hosts: cluster01        # The name of the group of hosts we're going to work on 
+  become: true            # Gain root privileges to run the command 
 
   tasks:
     - name: Install some basic packages
