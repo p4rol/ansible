@@ -9,10 +9,14 @@
     - name: Enable EPEL (extras repo)
       dnf:
         name: epel-release
-        state: absent 
+        state: present 
 
     - name: Install btop 
       dnf: 
         name:
-          -  btop
-        state: absent 
+          - btop
+          - fish 
+          - tmux
+          - htop
+
+        state: present
