@@ -1,8 +1,0 @@
-# This file contains a list of servers that tasks can be distributed to
-
-[cluster01]
-firewall
-pi.home
-s01.home
-s02.home
-s03.home
