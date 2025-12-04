@@ -5,7 +5,7 @@
 
 ---
 - name: Update apt cache, perform security upgrades, install packages
-  hosts: cluster03 # Update all hosts in your inventory
+  hosts: cluster01 # Update all hosts in your inventory
   become: true  # Gain root privileges
 
   tasks:
