@@ -9,7 +9,7 @@
         name: epel-release
         state: present 
 
-    - name: Install btop 
+    - name: Install btop fish tmux htop
       dnf: 
         name:
           - btop
