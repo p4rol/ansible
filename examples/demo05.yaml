@@ -47,6 +47,14 @@
         mode: '0644'
       notify: Restart chrony
 
+    # ----------- Ensure that chrony is enabled and running ----
+    - name: Ensure chrony service is enabled and running
+      ansible.builtin.service:
+        name: "{{ chrony_service }}"
+        state: started
+        enabled: true
+
+
   handlers:
     - name: Restart chrony
       ansible.builtin.service:
