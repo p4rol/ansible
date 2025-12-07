@@ -1,0 +1,13 @@
+---
+- name: Demo05 - reset the hosts 
+  hosts:
+    - cluster05oel
+    - cluster05ubuntu 
+  become: true           
+
+  tasks:
+    - name: Remove chrony 
+      ansible.builtin.package:
+        name:
+          - chrony 
+        state: absent 

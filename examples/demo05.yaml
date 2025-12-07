@@ -1,67 +1,54 @@
 ---
-# Play 1: OEL9 / RHEL9-like hosts
-- name: Install and configure chrony on OEL9 hosts
-  hosts: oel9_hosts
+- name: Demo05 - Install and configure chrony on supported Linux hosts
+  hosts:
+    - cluster05ubuntu
+    - cluster05oel
   become: true
 
   vars:
     chrony_package: chrony
-    chrony_service: chronyd
-    chrony_conf_path: /etc/chrony.conf
-    chrony_conf_src: chrony_oel9.conf
 
   tasks:
-    - name: Ensure chrony is installed (OEL9)
+    - name: Fail if OS family is not supported
+      ansible.builtin.fail:
+        msg: "Unsupported OS family: {{ ansible_facts['os_family'] }}. This playbook only supports RedHat and Debian."
+      when: ansible_facts['os_family'] not in ['RedHat', 'Debian']
+
+    # ---------- RedHat / OEL9 ----------
+    - name: Set variables for RedHat family
+      ansible.builtin.set_fact:
+        chrony_service: chronyd
+        chrony_conf_path: /etc/chrony.conf
+        chrony_conf_src: chrony.conf
+      when: ansible_facts['os_family'] == 'RedHat'
+
+    # ---------- Debian / Ubuntu 24 ----------
+    - name: Set variables for Debian family
+      ansible.builtin.set_fact:
+        chrony_service: chrony
+        chrony_conf_path: /etc/chrony/chrony.conf
+        chrony_conf_src: chrony.conf
+      when: ansible_facts['os_family'] == 'Debian'
+
+    # ---------- Install ----------
+    - name: Ensure chrony is installed
       ansible.builtin.package:
         name: "{{ chrony_package }}"
         state: present
+        update_cache: "{{ ansible_facts['os_family'] == 'Debian' }}"
 
-    - name: Push customised chrony.conf (OEL9)
+    # ---------- Deploy Config ----------
+    - name: Push customised chrony.conf
       ansible.builtin.copy:
         src: "{{ chrony_conf_src }}"
         dest: "{{ chrony_conf_path }}"
         owner: root
         group: root
         mode: '0644'
-      notify: Restart chrony (OEL9)
+      notify: Restart chrony
 
   handlers:
-    - name: Restart chrony (OEL9)
-      ansible.builtin.service:
-        name: "{{ chrony_service }}"
-        state: restarted
-        enabled: true
-
-
-# Play 2: Ubuntu 24 hosts
-- name: Install and configure chrony on Ubuntu 24 hosts
-  hosts: ubuntu24_hosts
-  become: true
-
-  vars:
-    chrony_package: chrony
-    chrony_service: chrony
-    chrony_conf_path: /etc/chrony/chrony.conf
-    chrony_conf_src: chrony_ubuntu24.conf
-
-  tasks:
-    - name: Ensure chrony is installed (Ubuntu 24)
-      ansible.builtin.package:
-        name: "{{ chrony_package }}"
-        state: present
-        update_cache: true
-
-    - name: Push customised chrony.conf (Ubuntu 24)
-      ansible.builtin.copy:
-        src: "{{ chrony_conf_src }}"
-        dest: "{{ chrony_conf_path }}"
-        owner: root
-        group: root
-        mode: '0644'
-      notify: Restart chrony (Ubuntu 24)
-
-  handlers:
-    - name: Restart chrony (Ubuntu 24)
+    - name: Restart chrony
       ansible.builtin.service:
         name: "{{ chrony_service }}"
         state: restarted
