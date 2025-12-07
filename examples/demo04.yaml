@@ -1,7 +1,7 @@
 ---
-- name: Enabling extra repos and installing a package in REDHAT 
-  hosts: cluster03        # The name of the group of hosts we're going to work on 
-  become: true            # Gain root privileges to run the command 
+- name: Installing packages on OEL and Ubuntu hosts
+  hosts: cluster04ubuntu cluster04oel       # The name of the group of hosts we're going to work on 
+  become: true                              # Gain root privileges to run the command 
 
   tasks:
     - name: Enable EPEL (extras repo)
@@ -16,5 +16,4 @@
           - fish 
           - tmux
           - htop
-
         state: present 
