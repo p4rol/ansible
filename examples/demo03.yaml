@@ -1,5 +1,5 @@
 ---
-- name: Enabling extra repos and installing a package in REDHAT 
+- name: Demo03 - Enabling extra repos and installing a package in REDHAT 
   hosts: cluster03        # The name of the group of hosts we're going to work on 
   become: true            # Gain root privileges to run the command 
 

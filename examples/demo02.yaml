@@ -1,5 +1,5 @@
 ---
-- name: Making packages present and then absent 
+- name: Demo02 - Making packages present and then absent 
   hosts: cluster02        # The name of the group of hosts we're going to work on 
   become: true            # Gain root privileges to run the command 
 

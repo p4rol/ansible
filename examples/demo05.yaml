@@ -1,0 +1,68 @@
+---
+# Play 1: OEL9 / RHEL9-like hosts
+- name: Install and configure chrony on OEL9 hosts
+  hosts: oel9_hosts
+  become: true
+
+  vars:
+    chrony_package: chrony
+    chrony_service: chronyd
+    chrony_conf_path: /etc/chrony.conf
+    chrony_conf_src: chrony_oel9.conf
+
+  tasks:
+    - name: Ensure chrony is installed (OEL9)
+      ansible.builtin.package:
+        name: "{{ chrony_package }}"
+        state: present
+
+    - name: Push customised chrony.conf (OEL9)
+      ansible.builtin.copy:
+        src: "{{ chrony_conf_src }}"
+        dest: "{{ chrony_conf_path }}"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart chrony (OEL9)
+
+  handlers:
+    - name: Restart chrony (OEL9)
+      ansible.builtin.service:
+        name: "{{ chrony_service }}"
+        state: restarted
+        enabled: true
+
+
+# Play 2: Ubuntu 24 hosts
+- name: Install and configure chrony on Ubuntu 24 hosts
+  hosts: ubuntu24_hosts
+  become: true
+
+  vars:
+    chrony_package: chrony
+    chrony_service: chrony
+    chrony_conf_path: /etc/chrony/chrony.conf
+    chrony_conf_src: chrony_ubuntu24.conf
+
+  tasks:
+    - name: Ensure chrony is installed (Ubuntu 24)
+      ansible.builtin.package:
+        name: "{{ chrony_package }}"
+        state: present
+        update_cache: true
+
+    - name: Push customised chrony.conf (Ubuntu 24)
+      ansible.builtin.copy:
+        src: "{{ chrony_conf_src }}"
+        dest: "{{ chrony_conf_path }}"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart chrony (Ubuntu 24)
+
+  handlers:
+    - name: Restart chrony (Ubuntu 24)
+      ansible.builtin.service:
+        name: "{{ chrony_service }}"
+        state: restarted
+        enabled: true
