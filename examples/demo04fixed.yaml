@@ -1,5 +1,5 @@
 ---
-- name: Demo04fixed: Installing packages on OEL and Ubuntu hosts
+- name: Demo04fixed - Installing packages on OEL and Ubuntu hosts
   hosts:
     - cluster04ubuntu
     - cluster04oel       

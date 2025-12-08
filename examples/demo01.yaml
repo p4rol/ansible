@@ -8,4 +8,4 @@
       apt:
         name:
           -  btop
-        state: present
+        state: absent 
