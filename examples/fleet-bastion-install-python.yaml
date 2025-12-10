@@ -1,0 +1,13 @@
+---
+- name: Run syspatch on a fleet of OpenBSD hosts
+  hosts: bastionhosts        
+  gather_facts: false
+  become: true
+  become_method: su
+  become_user: root
+  become_flags: '-'
+
+  tasks:
+    - name: 
+      ansible.builtin.raw: 
+        pkg_add python-3.12.11

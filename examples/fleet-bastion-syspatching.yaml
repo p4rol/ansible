@@ -1,0 +1,12 @@
+---
+- name: Run syspatch on a fleet of OpenBSD hosts
+  hosts: bastionhosts        
+  become: true
+  become_method: su 
+  become_user: root
+  become_flags: '-'
+
+  tasks:
+    - name: Run syspatch on the bastion host 
+      community.general.syspatch:
+      register: syspatch_result
