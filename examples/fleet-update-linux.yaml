@@ -11,18 +11,29 @@
     reboot_connect_timeout: 5
     reboot_post_reboot_delay: 15
     reboot_timeout: 600
+    proxy_server: "http://192.168.90.1:3128"
 
   tasks:
     - name: Update apt cache (for Debian/Ubuntu)
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 3600
+      environment:
+        HTTP_PROXY: "{{ proxy_server }}"
+        HTTPS_PROXY: "{{ proxy_server }}"
+        http_proxy: "{{ proxy_server }}"
+        https_proxy: "{{ proxy_server }}"
       when: ansible_facts['os_family'] == "Debian"
 
     - name: Upgrade all packages (for all OS families)
       ansible.builtin.package:
         name: "*"
         state: latest
+      environment:
+        HTTP_PROXY: "{{ proxy_server }}"
+        HTTPS_PROXY: "{{ proxy_server }}"
+        http_proxy: "{{ proxy_server }}"
+        https_proxy: "{{ proxy_server }}"
       register: package_update_status
 
     - name: Check if a reboot is required (for RedHat/OEL)
