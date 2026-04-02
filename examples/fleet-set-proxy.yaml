@@ -1,0 +1,45 @@
+---
+- name: Configure Package Managers to use Squid Proxy
+  hosts:
+    - redhathosts
+    - ubuntuhosts 
+  become: yes
+  vars:
+    # Replace this with the internal IP of your OpenBSD server
+    proxy_url: "http://192.168.90.1:3128"
+
+  tasks:
+    # --- Configuration for OEL9 (DNF) ---
+    - name: Configure DNF proxy for Oracle Linux
+      when: ansible_os_family == "RedHat"
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: '^proxy='
+        line: "proxy={{ proxy_url }}"
+        state: present
+
+    # --- Configuration for Ubuntu (APT) ---
+    - name: Configure APT proxy for Ubuntu
+      when: ansible_os_family == "Debian"
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/80proxy
+        content: |
+          Acquire::http::Proxy "{{ proxy_url }}/";
+          Acquire::https::Proxy "{{ proxy_url }}/";
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Verify proxy connectivity (Optional)
+      ansible.builtin.uri:
+        url: http://mirror.rise.ph/speed-test/speed_test_16MB
+        return_content: yes
+      environment:
+        http_proxy: "{{ proxy_url }}"
+      register: proxy_test
+      ignore_errors: yes
+
+    - name: Show proxy test result
+      ansible.builtin.debug:
+        msg: "Proxy is reachable from {{ inventory_hostname }}"
+      when: proxy_test.status == 200
