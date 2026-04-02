@@ -1,0 +1,29 @@
+---
+- name: Force Clean and Update Package Metadata
+  hosts:
+    - redhathosts
+    - ubuntuhosts 
+  become: yes
+
+  tasks:
+    # --- Ubuntu / Debian Section ---
+    - name: Clean and Update APT
+      when: ansible_os_family == "Debian"
+      block:
+        - name: Clear APT local repository cache
+          ansible.builtin.command: apt-get clean
+
+        - name: Update APT cache (Force network fetch)
+          ansible.builtin.apt:
+            update_cache: yes
+            force_apt_get: yes
+
+    # --- Oracle Linux / RHEL Section ---
+    - name: Clean and Update DNF
+      when: ansible_os_family == "RedHat"
+      block:
+        - name: Clear DNF metadata and cache
+          ansible.builtin.command: dnf clean all
+
+        - name: Rebuild DNF cache (Force network fetch)
+          ansible.builtin.command: dnf makecache
