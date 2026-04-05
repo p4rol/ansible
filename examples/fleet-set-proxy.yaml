@@ -3,6 +3,7 @@
   hosts:
     - redhathosts
     - ubuntuhosts 
+    - proxmoxhosts
   become: yes
   vars:
     # Replace this with the internal IP of your OpenBSD server
