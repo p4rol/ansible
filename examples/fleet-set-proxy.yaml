@@ -6,11 +6,13 @@
     - proxmoxhosts
   become: yes
   vars:
+    # OpenBSD Squid Proxy
     proxy_url: "http://192.168.90.1:3128"
 
   tasks:
-    # --- Configuration for RedHat/OEL (DNF) ---
-    - name: Ensure DNF uses proxy and ignores SSL (Unencrypted path)
+    # --- RedHat / Oracle Linux 9 Configuration ---
+    
+    - name: Configure DNF proxy and disable SSL verification
       when: ansible_os_family == "RedHat"
       ansible.builtin.blockinfile:
         path: /etc/dnf/dnf.conf
@@ -19,16 +21,24 @@
           sslverify=0
         marker: "# {mark} ANSIBLE MANAGED PROXY SETTINGS"
 
+    - name: Find all repository files on remote RedHat hosts
+      when: ansible_os_family == "RedHat"
+      ansible.builtin.find:
+        paths: /etc/yum.repos.d
+        patterns: "*.repo"
+      register: remote_repo_files
+
     - name: Switch RedHat repositories from HTTPS to HTTP
       when: ansible_os_family == "RedHat"
       ansible.builtin.replace:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         regexp: 'https://'
         replace: 'http://'
-      with_fileglob:
-        - "/etc/yum.repos.d/*.repo"
+      loop: "{{ remote_repo_files.files }}"
+      # This ensures Squid can see the GET requests instead of a TCP_TUNNEL
 
-    # --- Configuration for Ubuntu (APT) ---
+    # --- Ubuntu / Debian Configuration ---
+
     - name: Configure APT proxy for Ubuntu
       when: ansible_os_family == "Debian"
       ansible.builtin.copy:
@@ -41,8 +51,9 @@
         group: root
         mode: '0644'
 
-    # --- Verification ---
-    - name: Verify proxy connectivity (HTTP only)
+    # --- Connectivity Verification ---
+
+    - name: Verify proxy connectivity (Plain HTTP)
       ansible.builtin.uri:
         url: http://mirror.rise.ph/speed-test/speed_test_16MB
         timeout: 10
