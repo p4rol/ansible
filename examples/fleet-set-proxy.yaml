@@ -6,18 +6,27 @@
     - proxmoxhosts
   become: yes
   vars:
-    # Replace this with the internal IP of your OpenBSD server
     proxy_url: "http://192.168.90.1:3128"
 
   tasks:
-    # --- Configuration for OEL9 (DNF) ---
-    - name: Configure DNF proxy for Oracle Linux
+    # --- Configuration for RedHat/OEL (DNF) ---
+    - name: Ensure DNF uses proxy and ignores SSL (Unencrypted path)
       when: ansible_os_family == "RedHat"
-      ansible.builtin.lineinfile:
+      ansible.builtin.blockinfile:
         path: /etc/dnf/dnf.conf
-        regexp: '^proxy='
-        line: "proxy={{ proxy_url }}"
-        state: present
+        block: |
+          proxy={{ proxy_url }}
+          sslverify=0
+        marker: "# {mark} ANSIBLE MANAGED PROXY SETTINGS"
+
+    - name: Switch RedHat repositories from HTTPS to HTTP
+      when: ansible_os_family == "RedHat"
+      ansible.builtin.replace:
+        path: "{{ item }}"
+        regexp: 'https://'
+        replace: 'http://'
+      with_fileglob:
+        - "/etc/yum.repos.d/*.repo"
 
     # --- Configuration for Ubuntu (APT) ---
     - name: Configure APT proxy for Ubuntu
@@ -27,14 +36,16 @@
         content: |
           Acquire::http::Proxy "{{ proxy_url }}/";
           Acquire::https::Proxy "{{ proxy_url }}/";
+          Acquire::https::Verify-Peer "false";
         owner: root
         group: root
         mode: '0644'
 
-    - name: Verify proxy connectivity (Optional)
+    # --- Verification ---
+    - name: Verify proxy connectivity (HTTP only)
       ansible.builtin.uri:
         url: http://mirror.rise.ph/speed-test/speed_test_16MB
-        return_content: yes
+        timeout: 10
       environment:
         http_proxy: "{{ proxy_url }}"
       register: proxy_test
@@ -43,4 +54,4 @@
     - name: Show proxy test result
       ansible.builtin.debug:
         msg: "Proxy is reachable from {{ inventory_hostname }}"
-      when: proxy_test.status == 200
+      when: proxy_test.status is defined and proxy_test.status == 200
