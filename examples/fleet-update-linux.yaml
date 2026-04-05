@@ -3,6 +3,7 @@
   hosts:
     - redhathosts
     - ubuntuhosts 
+    - proxmoxhosts
   become: true
   gather_facts: true
   
