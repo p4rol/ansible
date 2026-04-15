@@ -12,6 +12,7 @@ ubuntuserver10
 adsb
 pihole01
 pi-wifi
+bigpi-wifi
 
 [proxmoxhosts]
 s01
